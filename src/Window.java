@@ -1,11 +1,13 @@
 import javax.swing.*;
 import java.awt.event.*;
-import java.io.*;
+import javax.sound.sampled.*;
+import java.io.File;
 
 public class Window extends JFrame implements ActionListener {  
-  JLabel label = new JLabel();
-
-  public Window() {
+  private JButton start;
+  private Clip clip = AudioSystem.getClip();
+  
+  public Window() throws Exception {
     setSize(800, 600);  
     setLayout(null);
     setResizable(false);
@@ -17,10 +19,11 @@ public class Window extends JFrame implements ActionListener {
     start_menu.setBounds(0,0,800,600);
 
     // Start Button
-    JButton start = new JButton(new ImageIcon("src/img/start.png"));
+    start = new JButton(new ImageIcon("src/img/start.png"));
     start.setBounds(240,327,320,100);
     start.setBorder(BorderFactory.createEmptyBorder());
 
+    // Adds to Frame
     getContentPane().add(start_menu);
     getContentPane().add(start);
 
@@ -33,14 +36,36 @@ public class Window extends JFrame implements ActionListener {
       }
     });
 
+    start.addActionListener(this);
+  
+    AudioInputStream main_menu = getAudioFile("main_menu.wav");
+    clip.open(main_menu);      
+    clip.loop(Clip.LOOP_CONTINUOUSLY);
+    clip.start();
+    
     setVisible(true);  
+  }
+
+  public AudioInputStream getAudioFile(String path) throws Exception {
+    return AudioSystem.getAudioInputStream(new File("src/aud/" + path).getAbsoluteFile());
   }
 
   @Override
   public void actionPerformed(ActionEvent e) {
-    // if(e.getSource() == button) 
-    //   System.out.println("button1");
-    // else if(e.getSource() == button2)
-    //   System.out.println("button2");
+    if(e.getSource() == start) {
+      clip.stop();
+
+      try {
+        AudioInputStream select = getAudioFile("select.wav");
+        Clip clip = AudioSystem.getClip();
+        clip.open(select);  
+        clip.start();
+
+        Thread.sleep(500);
+      } catch (Exception e1) {}
+
+      
+    }
+    
   }
 }  
