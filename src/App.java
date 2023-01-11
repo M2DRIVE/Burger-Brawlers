@@ -15,7 +15,7 @@ while loop
 */
 
 public class App {  
-  public static void main(String s[]) {  
-    Window w = new Window();    
+  public static void main(String args[]) throws Exception {  
+    new Window().setVisible(true);
   }  
 }  
