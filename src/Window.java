@@ -47,7 +47,7 @@ public class Window extends JFrame implements ActionListener {
         
     // Adds Label to Frame
 
-    ImageIcon transition_ImageIcon = new ImageIcon("src/img/transition_w.png");
+    ImageIcon transition_ImageIcon = new ImageIcon("src/img/transition.png");
         transition = new JLabel();
         transition.setIcon(transition_ImageIcon);
         transition.setBounds(0,600,800,1800);
@@ -97,13 +97,23 @@ public class Window extends JFrame implements ActionListener {
       }).start();
     } catch (Exception e1) {}
   }
+
+  public void thing2() {
+    Timer timer = new Timer(0, new ActionListener() {
+      int y_pos = 600;
+      public void actionPerformed(ActionEvent event) {
+        transition.setBounds(0, y_pos, 800, 1800);
+        y_pos--;
+      }
+    }); 
+    timer.start();
+  }
+
   @Override
   public void actionPerformed(ActionEvent e) {
     if(e.getSource() == start) {
-      System.out.println("woo");
-      //clip.stop();
-      thing();
- 
+      System.out.println("Button Press");
+      thing2();
     }
   }
 }  
