@@ -5,17 +5,21 @@ import javax.sound.sampled.*;
 import java.io.File;
 
 public class Window extends JFrame implements ActionListener {  
-  //private Clip clip = AudioSystem.getClip();
   private JLabel main_menu = new JLabel();
   private JLabel game = new JLabel();
   private JLabel transition;
   private JButton start, punch, kick, stab;
   private JLabel fist_color, foot_color, knife_color;
+  private JLabel red, yellow;
   private JLabel red_blink, yellow_blink;
+  private JLabel red_health, yellow_health;
 
-  Clip clip = AudioSystem.getClip();
+  //Clip clip = AudioSystem.getClip();
 
   private boolean gameStarted = false;
+  private String turn = "red";
+  private int red_health_num = 100;
+  private int yellow_health_num = 100;
 
   public Window() throws Exception {
     startFrame();
@@ -68,10 +72,10 @@ public class Window extends JFrame implements ActionListener {
   }
 
   public void playTransition() throws Exception {
-    AudioInputStream select = getAudioFile("select.wav");
-    Clip clip = AudioSystem.getClip();
-    clip.open(select);  
-    clip.start();
+    // AudioInputStream select = getAudioFile("select.wav");
+    // Clip clip = AudioSystem.getClip();
+    // clip.open(select);  
+    // clip.start();
 
     new Thread(new Runnable() {
       @Override
@@ -131,7 +135,7 @@ public class Window extends JFrame implements ActionListener {
     new Thread(new Runnable() {
       @Override
       public void run() {
-
+        
       }
     }).start();
   }
@@ -141,21 +145,21 @@ public class Window extends JFrame implements ActionListener {
     // Standard Assets
     JLabel background = new JLabel(getIcon("background.gif"));
     background.setBounds(0,0,800,600);
-    JLabel red = new JLabel(getIcon("red.png"));
+    red = new JLabel(getIcon("red.png"));
     red.setBounds(36,127,126,259);
     red_blink = new JLabel(getIcon("red_blink.png"));
     red_blink.setBounds(36,127,126,259);
     JLabel red_shadow = new JLabel(getIcon("shadow.png"));
     red_shadow.setBounds(31,370,111,30);
-    JLabel red_health = new JLabel("100");
+    red_health = new JLabel("100");
     red_health.setBounds(122, 30, 25, 10);
-    JLabel yellow = new JLabel(getIcon("yellow.png"));
+    yellow = new JLabel(getIcon("yellow.png"));
     yellow.setBounds(625,118,133,266);
     yellow_blink = new JLabel(getIcon("yellow_blink.png"));
     yellow_blink.setBounds(625,118,133,266);
     JLabel yellow_shadow = new JLabel(getIcon("shadow.png"));
     yellow_shadow.setBounds(650, 367,111,30);
-    JLabel yellow_health = new JLabel("100");
+    yellow_health = new JLabel("100");
     yellow_health.setBounds(647, 30, 25, 10);    
     
     // Attacks
@@ -262,6 +266,54 @@ public class Window extends JFrame implements ActionListener {
     red_blink.setVisible(false);
     yellow_blink.setVisible(false);
   }
+
+  public void attack(JLabel action, int damage, int chance, int x1, int y1, int x2, int y2) {
+    try{
+      if(turn.equals("red")) {
+        action.setBounds(x1, y1, x2, y2);
+        action.setVisible(true);
+        Thread.sleep(2500);
+
+        if(Math.random() <= chance) {
+          // AudioInputStream select = getAudioFile("hit.wav");
+          // Clip clip = AudioSystem.getClip();
+          // clip.open(select);  
+          // clip.start();
+          
+          yellow_health_num -= damage;
+          yellow_health.setText(yellow_health_num + "");
+          yellow.setIcon(getIcon("yellow_hit.png"));
+          Thread.sleep(250);
+          yellow.setIcon(getIcon("yellow.png"));
+          action.setVisible(false);
+          turn = "yellow";
+        }
+      }
+
+      else if(turn.equals("yellow")) {
+        action.setBounds(x1+582,y1,x2,y2);
+        action.setVisible(true);
+        Thread.sleep(2500);
+
+        if(Math.random() <= chance) {
+          // AudioInputStream select = getAudioFile("hurt.wav");
+          // Clip clip = AudioSystem.getClip();
+          // clip.open(select);  
+          // clip.start();
+          
+          red_health_num -= damage;
+          red_health.setText(red_health_num + "");
+          red.setIcon(getIcon("red_hit.png"));
+          Thread.sleep(250);
+          red.setIcon(getIcon("red.png"));
+          action.setVisible(false);
+          turn = "red";
+        }
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
   
   public AudioInputStream getAudioFile(String filename) throws Exception {
     return AudioSystem.getAudioInputStream(new File("src/aud/" + filename).getAbsoluteFile());
@@ -286,6 +338,7 @@ public class Window extends JFrame implements ActionListener {
     if(!gameStarted) return;
 
     else if(event.getSource() == punch) {
+      punch();
       System.out.println("A");
     }
 
