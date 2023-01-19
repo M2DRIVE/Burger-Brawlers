@@ -3,6 +3,7 @@ import java.awt.Color;
 import java.awt.event.*;
 import javax.sound.sampled.*;
 import java.io.File;
+import java.util.Random;
 
 public class Window extends JFrame implements ActionListener {  
   private JLabel main_menu = new JLabel();
@@ -299,18 +300,28 @@ public class Window extends JFrame implements ActionListener {
           clip.start();
           
           yellow_health_num -= damage;
-          yellow_health.setText(yellow_health_num + "");
+          if(yellow_health_num <= 0) {
+            yellow_health.setText("0");  
+            yellow.setIcon(getIcon("yellow_hit.png"));  
+            action.setVisible(false);
+            return;
+          }
+          yellow_health.setText(toString(yellow_health_num));
           yellow.setIcon(getIcon("yellow_hit.png"));
           Thread.sleep(250);
           yellow.setIcon(getIcon("yellow.png"));
           action.setVisible(false);
           turn = "yellow";
+          Thread.sleep(1000);
+          aiAttack();
         }
 
         else {
           Thread.sleep(250);
           action.setVisible(false);
           turn = "yellow";
+          Thread.sleep(1000);
+          aiAttack();
         }
       }
 
@@ -326,7 +337,13 @@ public class Window extends JFrame implements ActionListener {
           clip.start();
           
           red_health_num -= damage;
-          red_health.setText(red_health_num + "");
+          if(red_health_num <= 0) {
+            red_health.setText("0");  
+            red.setIcon(getIcon("red_hit.png"));  
+            action.setVisible(false);
+            return;
+          }
+          red_health.setText(toString(red_health_num));
           red.setIcon(getIcon("red_hit.png"));
           Thread.sleep(250);
           red.setIcon(getIcon("red.png"));
@@ -344,6 +361,16 @@ public class Window extends JFrame implements ActionListener {
       e.printStackTrace();
     }
   }
+
+  public void aiAttack() {
+    String [] attacks = {"punch","punch","punch","kick","kick","stab"};
+    String attack_choice = attacks[new Random().nextInt(6)];
+    switch(attack_choice) {
+      case "punch" : punch(); break;
+      case "kick" : kick(); break;
+      case "stab" : stab(); break;
+    }
+  }
   
   public AudioInputStream getAudioFile(String filename) throws Exception {
     return AudioSystem.getAudioInputStream(new File("src/aud/" + filename).getAbsoluteFile());
@@ -351,6 +378,10 @@ public class Window extends JFrame implements ActionListener {
 
   public ImageIcon getIcon(String filename) {
     return new ImageIcon("src/img/game/" + filename);
+  }
+
+  public String toString(int health_num) {
+    return health_num + "";
   }
 
   @Override
@@ -366,17 +397,15 @@ public class Window extends JFrame implements ActionListener {
     }
 
     if(!gameStarted) return;
+    if(!turn.equals("red")) return;
 
-    else if(event.getSource() == punch) {
+    else if(event.getSource() == punch) 
       punch();
-    }
 
-    else if(event.getSource() == kick) {
+    else if(event.getSource() == kick) 
       kick();
-    }
 
-    else if(event.getSource() == stab) {
+    else if(event.getSource() == stab) 
       stab();
-    }
   }
 }  
